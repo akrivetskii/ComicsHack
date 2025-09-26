@@ -59,7 +59,7 @@ def image_endpoint(prompt: str = Query(..., description="Описание изо
             number_of_images=1,
             output_mime_type="image/jpeg",
             aspect_ratio="1:1",
-            image_size="1024x1024",
+            image_size="1K",
         ),
     )
 
