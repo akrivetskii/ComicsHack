@@ -58,9 +58,8 @@ def image_endpoint(prompt: str = Query(..., description="Описание изо
         config=dict(
             number_of_images=1,
             output_mime_type="image/jpeg",
-            person_generation="ALLOW_ALL",
             aspect_ratio="1:1",
-            image_size="1K",
+            image_size="1024x1024",
         ),
     )
 
