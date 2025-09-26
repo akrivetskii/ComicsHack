@@ -1,12 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query, HTTPException
+from fastapi.responses import Response
 import base64
 import mimetypes
 import os
 from google import genai
 from google.genai import types
-
-
-
 
 def generate():
     client = genai.Client(api_key="AIzaSyD8pTi_OfJwLPK6F_fg_ePoMqfVjvu4QuM")
@@ -16,7 +14,7 @@ def generate():
         types.Content(
             role="user",
             parts=[
-                types.Part.from_text(text="Привет! Ты говоришь по-русски?"),
+                types.Part.from_text(text="Привет! Расскажи, что такое задача трёх тел."),
             ],
         ),
     ]
@@ -27,43 +25,28 @@ def generate():
 
     return response.text
 
-    # generate_content_config = types.GenerateContentConfig(
-    #     response_modalities=[
-    #         "IMAGE",
-    #         "TEXT",
-    #     ],
-    # )
-
-    # file_index = 0
-    # for chunk in client.models.generate_content_stream(
-    #     model=model,
-    #     contents=contents,
-    #     config=generate_content_config,
-    # ):
-    #     if (
-    #         chunk.candidates is None
-    #         or chunk.candidates[0].content is None
-    #         or chunk.candidates[0].content.parts is None
-    #     ):
-    #         continue
-    #     if chunk.candidates[0].content.parts[0].inline_data and chunk.candidates[0].content.parts[0].inline_data.data:
-    #         file_name = f"first.txt_{file_index}"
-    #         file_index += 1
-    #         inline_data = chunk.candidates[0].content.parts[0].inline_data
-    #         data_buffer = inline_data.data
-    #         file_extension = mimetypes.guess_extension(inline_data.mime_type)
-    #         save_binary_file(f"{file_name}{file_extension}", data_buffer)
-    #     else:
-    #         print(chunk.text)
-
 
 app = FastAPI()
+client = genai.Client()
+model = "gemini-2.5-flash"
+
+@app.get("/chat")
+def chat_endpoint(prompt: str = Query(..., description="Текст запроса к модели")):
+    try:
+
+        contents = [
+            types.Content(
+                role="user",
+                parts=[types.Part.from_text(text=prompt)],
+            ),
+        ]
+        response = client.models.generate_content(model=model, contents=contents)
+        return {"response": response.text}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка генерации: {str(e)}")
 
 @app.get("/")
 def read_root():
     res = generate()
-    return {"message": res}
-
-# @app.get("/items/{item_id}")
-# def read_item(item_id: int, q: str = None):
-#     return {"item_id": item_id, "q": q}
+    return {"message": "ComicsHack API работает! Используй /chat или /image"}
