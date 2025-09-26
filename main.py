@@ -27,7 +27,7 @@ def generate():
 
 
 app = FastAPI()
-client = genai.Client()
+client = genai.Client(api_key="AIzaSyD8pTi_OfJwLPK6F_fg_ePoMqfVjvu4QuM")
 model = "gemini-2.5-flash"
 
 @app.get("/chat")
@@ -49,4 +49,4 @@ def chat_endpoint(prompt: str = Query(..., description="Текст запрос�
 @app.get("/")
 def read_root():
     res = generate()
-    return {"message": "ComicsHack API работает! Используй /chat или /image"}
+    return {"message": res}
