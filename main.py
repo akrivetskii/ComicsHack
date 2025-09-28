@@ -32,7 +32,7 @@ app = FastAPI()
 client = genai.Client(api_key=API_KEY)
 model_chat_flash = "gemini-2.5-flash"
 model_chat_pro = "gemini-2.5-pro"
-model_image = "models/imagen-4.0-generate-001"
+model_image = "gemini-2.5-flash-image-preview"
 
 @app.get("/flash")
 def chat_endpoint(prompt: str = Query(..., description="Текст запроса к модели")):
@@ -93,5 +93,4 @@ def image_endpoint(prompt: str = Query(..., description="Описание изо
 
 @app.get("/")
 def read_root():
-    res = generate()
-    return {"message": res}
+    return {"message": "Everything is OK"}
