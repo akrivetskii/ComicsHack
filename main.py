@@ -30,10 +30,11 @@ API_KEY = "AIzaSyD8pTi_OfJwLPK6F_fg_ePoMqfVjvu4QuM"
 
 app = FastAPI()
 client = genai.Client(api_key=API_KEY)
-model_chat = "gemini-2.5-flash"
+model_chat_flash = "gemini-2.5-flash"
+model_chat_pro = "gemini-2.5-pro"
 model_image = "models/imagen-4.0-generate-001"
 
-@app.get("/chat")
+@app.get("/flash")
 def chat_endpoint(prompt: str = Query(..., description="Текст запроса к модели")):
     try:
 
@@ -43,7 +44,23 @@ def chat_endpoint(prompt: str = Query(..., description="Текст запрос�
                 parts=[types.Part.from_text(text=prompt)],
             ),
         ]
-        response = client.models.generate_content(model=model_chat, contents=contents)
+        response = client.models.generate_content(model=model_chat_flash, contents=contents)
+        return {"response": response.text}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ошибка генерации: {str(e)}")
+
+@app.get("/pro")
+def chat_endpoint(prompt: str = Query(..., description="Текст запроса к модели")):
+    try:
+
+        contents = [
+            types.Content(
+                role="user",
+                parts=[types.Part.from_text(text=prompt)],
+            ),
+        ]
+        response = client.models.generate_content(model=model_chat_pro, contents=contents)
         return {"response": response.text}
 
     except Exception as e:
